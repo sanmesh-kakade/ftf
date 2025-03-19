@@ -26,3 +26,7 @@ go.work.sum
 
 # IDE
 .vscode
+
+# cli binary and bin directory
+ftf
+bin
