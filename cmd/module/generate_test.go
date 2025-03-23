@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	FACETS_YAML_CONTENT = "intent: test-intent\nflavor: test-flavor\nversion: \"1.0\"\nclouds: [ aws ]\ndescription: Test Description\nspec:\n  title: Test Title\n  description: Test Description\n  type: object\noutputs:\n  default:\n     type: \"@outputs/test-intent\"\nsample:\n  kind: test-intent\n  flavor: test-flavor\n  version: \"1.0\"\n  disabled: true\n  spec:\n"
+	FACETS_YAML_CONTENT = "intent: test-intent\nflavor: test-flavor\nversion: \"1.0\"\nclouds: [aws]\ndescription: Test Description\nspec:\n  title: Test Title\n  description: Test Description\n  type: object\noutputs:\n  default:\n     type: \"@outputs/test-intent\"\nsample:\n  kind: test-intent\n  flavor: test-flavor\n  version: \"1.0\"\n  disabled: true\n  spec:\n"
 	MAIN_TF_CONTENT     = "# main.tf - This file is for defining the main resources for the module\n"
-	OUTPUT_TF_CONTENT   = "locals {\n  output_interfaces = {}\n  output_attributes = {\n  }\n}\n"
-	VARIABLE_TF_CONTENT = "variable \"instance\" {\n  description = \"Test Description\"\n  type = object({\n    kind    = string\n    flavor  = string\n    version = string\n    spec = object({\n    })\n  })\n}\nvariable \"instance_name\" {\n  description = \"The architectural name for the resource as added in the Facets blueprint designer.\"\n  type        = string\n}\nvariable \"environment\" {\n  description = \"An object containing details about the environment.\"\n  type = object({\n    name        = string\n    unique_name = string\n  })\n}\nvariable \"inputs\" {\n  description = \"A map of inputs requested by the module developer.\"\n  type = object({\n  })\n}"
+	OUTPUT_TF_CONTENT   = "locals {\n  output_interfaces = {}\n  output_attributes = {}\n}\n"
+	VARIABLE_TF_CONTENT = "variable \"instance\" {\n  description = \"Test Description\"\n  type = object({\n    kind    = string\n    flavor  = string\n    version = string\n    spec = object({\n    })\n  })\n}\nvariable \"instance_name\" {\n  description = \"The architectural name for the resource as added in the Facets blueprint designer.\"\n  type        = string\n}\nvariable \"environment\" {\n  description = \"An object containing details about the environment.\"\n  type = object({\n    name        = string\n    unique_name = string\n  })\n}\nvariable \"inputs\" {\n  description = \"A map of inputs requested by the module developer.\"\n  type        = object({})\n}\n"
 )
 
 func TestGenerateModuleWithRealTemplates(t *testing.T) {

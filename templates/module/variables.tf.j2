@@ -1,5 +1,5 @@
 variable "instance" {
-  description = "{{ .description }}"
+  description = "{{ required .description "description" }}"
   type = object({
     kind    = string
     flavor  = string
@@ -21,6 +21,5 @@ variable "environment" {
 }
 variable "inputs" {
   description = "A map of inputs requested by the module developer."
-  type = object({
-  })
+  type        = object({})
 }

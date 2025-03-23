@@ -1,18 +1,18 @@
-intent: {{ .intent }}
-flavor: {{ .flavor }}
+intent: {{ required .intent "intent" }}
+flavor: {{ required .flavor "flavor" }}
 version: "1.0"
-clouds: [ {{ .cloud }} ]
-description: {{ .description }}
+clouds: [{{ required .cloud "cloud" }}]
+description: {{ required .description "description" }}
 spec:
-  title: {{ .title }}
-  description: {{ .description }}
+  title: {{ required .title "title" }}
+  description: {{ required .description "description" }}
   type: object
 outputs:
   default:
-     type: "@outputs/{{ .intent }}"
+     type: "@outputs/{{ required .intent "intent" }}"
 sample:
-  kind: {{ .intent }}
-  flavor: {{ .flavor }}
+  kind: {{ required .intent "intent" }}
+  flavor: {{ required .flavor "flavor" }}
   version: "1.0"
   disabled: true
   spec:

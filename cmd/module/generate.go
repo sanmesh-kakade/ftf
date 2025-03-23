@@ -8,6 +8,7 @@ import (
 	"runtime"
 
 	"github.com/spf13/cobra"
+	"go.uber.org/zap"
 )
 
 const (
@@ -54,14 +55,14 @@ func generateModule(cmd *cobra.Command, args []string) {
 	path := filepath.Join(intent, flavor, "1.0")
 	err := os.MkdirAll(path, os.ModePerm)
 	if err != nil {
-		fmt.Printf("❌ Failed to create directory: %v\n", err)
+		zap.L().Error(fmt.Sprintf("❌ Failed to create directory: %v\n", err))
 		return
 	}
 
 	// Get the directory of the current file (generate.go)
 	_, currentFile, _, ok := runtime.Caller(0)
 	if !ok {
-		fmt.Println("❌ Failed to get the current file path")
+		zap.L().Error("❌ Failed to get the current file path")
 		return
 	}
 	currentDir := filepath.Dir(currentFile)
@@ -72,14 +73,24 @@ func generateModule(cmd *cobra.Command, args []string) {
 	// List of template files to process
 	templateFiles := []string{"main.tf.j2", "variables.tf.j2", "output.tf.j2", "facets.yaml.j2"}
 
+	// Define a custom function to handle missing variables
+	funcMap := template.FuncMap{
+		"required": func(value interface{}, name string) (interface{}, error) {
+			if value == nil || value == "" {
+				return nil, fmt.Errorf("missing required variable: %s", name)
+			}
+			return value, nil
+		},
+	}
+
 	// Render and write templatess
 	for _, templateFile := range templateFiles {
 		templatePath := filepath.Join(templatesPath, templateFile)
 
 		// Parse the template file
-		tmpl, err := template.ParseFiles(templatePath)
+		tmpl, err := template.New(filepath.Base(templateFile)).Funcs(funcMap).ParseFiles(templatePath)
 		if err != nil {
-			fmt.Printf("❌ Failed to parse template %s: %v\n", templateFile, err)
+			zap.L().Error(fmt.Sprintf("❌ Failed to parse template %s: %v\n", templateFile, err))
 			return
 		}
 
@@ -88,7 +99,7 @@ func generateModule(cmd *cobra.Command, args []string) {
 		outputFilePath := filepath.Join(path, outputFileName)
 		outputFile, err := os.Create(outputFilePath)
 		if err != nil {
-			fmt.Printf("❌ Failed to create file %s: %v\n", outputFilePath, err)
+			zap.L().Error(fmt.Sprintf("❌ Failed to create file %s: %v\n", outputFilePath, err))
 			return
 		}
 		defer outputFile.Close()
@@ -102,10 +113,10 @@ func generateModule(cmd *cobra.Command, args []string) {
 			"description": description,
 		})
 		if err != nil {
-			fmt.Printf("❌ Failed to render template %s: %v\n", templateFile, err)
+			zap.L().Error(fmt.Sprintf("❌ Failed to render template %s: %v\n", templateFile, err))
 			return
 		}
 	}
 
-	fmt.Printf("✅ Module generated at: %s\n", path)
+	zap.L().Info(fmt.Sprintf("✅ Module generated at: %s", path))
 }
