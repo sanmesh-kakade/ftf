@@ -1,0 +1,61 @@
+name: Go CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Go environment
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.23 # Specify the Go version you are using
+
+      # Cache Go modules
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      # Install dependencies
+      - name: Install dependencies
+        run: go mod tidy
+
+      # Install staticcheck
+      - name: Install staticcheck
+        run: go install honnef.co/go/tools/cmd/staticcheck@latest
+
+      # Run formatting check
+      - name: Run go fmt
+        run: go fmt ./...
+
+      # Run static analysis (linting)
+      - name: Run staticcheck
+        run: staticcheck ./...
+
+      # Run vet
+      - name: Run go vet
+        run: go vet ./...
+
+      # Run tests
+      - name: Run tests
+        run: go test ./... -v
+
+      # Build the application
+      - name: Build application
+        run: make build
